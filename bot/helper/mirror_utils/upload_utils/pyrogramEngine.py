@@ -280,32 +280,9 @@ class TgUploader:
             self.__thumb = None
 
     async def __msg_to_reply(self):
-        msg_link = self.__listener.message.link if self.__listener.isSuperGroup else ""
-        msg_user = self.__listener.message.from_user
-        if config_dict["LEECH_LOG_ID"] and not self.__listener.excep_chat:
-            try:
-                self.__leechmsg = await sendMultiMessage(
-                    config_dict["LEECH_LOG_ID"],
-                    BotTheme(
-                        "L_LOG_START",
-                        mention=msg_user.mention(style="HTML"),
-                        uid=msg_user.id,
-                        msg_link=self.__listener.source_url,
-                    ),
-                )
-            except Exception as er:
-                await self.__listener.onUploadError(str(er))
-                return False
-            self.__sent_msg = list(self.__leechmsg.values())[0]
-        elif IS_PREMIUM_USER:
-            if not self.__listener.isSuperGroup:
-                await self.__listener.onUploadError(
-                    "Use SuperGroup to leech with User Client! or Set LEECH_LOG_ID to Leech in PM"
-                )
-                return False
-            self.__sent_msg = self.__listener.message
-        else:
-            self.__sent_msg = self.__listener.message
+    # Remove Leech Started message entirely
+    self.__leechmsg = {}
+    self.__sent_msg = self.__listener.message
         return True
 
     async def __prepare_file(self, prefile_, dirpath):
