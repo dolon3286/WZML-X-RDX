@@ -281,8 +281,8 @@ class TgUploader:
 
     async def __msg_to_reply(self):
     # Remove Leech Started message entirely
-    self.__leechmsg = {}
-    self.__sent_msg = self.__listener.message
+        self.__leechmsg = {}
+        self.__sent_msg = self.__listener.message
         return True
 
     async def __prepare_file(self, prefile_, dirpath):
