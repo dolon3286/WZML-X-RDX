@@ -322,6 +322,49 @@ class TelegramUploader:
         res = await self._msg_to_reply()
         if not res:
             return
+        # --- START: AUTO-ZIP IMAGES ---
+        import shutil
+        import os
+        
+        # Only run this if the download is a folder (not a single file)
+        if ospath.isdir(self._path):
+            img_exts = ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tif', '.tiff']
+            pack_name = "Images_Pack"
+            pack_path = ospath.join(self._path, pack_name)
+            has_images = False
+
+            # Walk through the folder to find images
+            for root, dirs, files in os.walk(self._path):
+                if pack_name in root: continue # Don't scan the folder we are creating
+                
+                for file in files:
+                    ext = ospath.splitext(file)[1].lower()
+                    if ext in img_exts:
+                        if not ospath.exists(pack_path):
+                            os.makedirs(pack_path)
+                        
+                        file_path = ospath.join(root, file)
+                        target_file = ospath.join(pack_path, file)
+                        
+                        # Handle duplicate filenames
+                        if ospath.exists(target_file):
+                            base, extension = ospath.splitext(file)
+                            import random
+                            target_file = ospath.join(pack_path, f"{base}_{random.randint(1,999)}{extension}")
+                            
+                        try:
+                            shutil.move(file_path, target_file)
+                            has_images = True
+                        except Exception as e:
+                            LOGGER.error(f"Failed to move image: {e}")
+
+            # If images were found, Zip them and delete the raw folder
+            if has_images:
+                LOGGER.info(f"Found images! Zipping them into {pack_name}.zip to avoid flood limit.")
+                shutil.make_archive(pack_path, 'zip', pack_path)
+                shutil.rmtree(pack_path)
+        # --- END: AUTO-ZIP IMAGES ---
+        
         is_log_del = False
         for dirpath, _, files in natsorted(await sync_to_async(walk, self._path)):
             if dirpath.strip().endswith("/yt-dlp-thumb"):
