@@ -69,6 +69,8 @@ class GoogleDriveUpload(GoogleDriveHelper):
                 if result is None:
                     raise ValueError("Upload has been manually cancelled!")
                 link = self.G_DRIVE_DIR_BASE_DOWNLOAD_URL.format(dir_id)
+                if Config.INDEX_URL and not link.endswith("/"):
+                    link += "/"
                 if self.listener.is_cancelled:
                     return
                 LOGGER.info(f"Uploaded To G-Drive: {self.listener.name}")
