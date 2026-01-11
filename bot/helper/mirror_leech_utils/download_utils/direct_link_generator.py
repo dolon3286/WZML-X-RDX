@@ -719,53 +719,6 @@ def pixeldrain(url):
     except Exception as e:
         raise DirectDownloadLinkException("ERROR: Direct link not found") from e
 
-def bunkr(url):
-    try:
-        parsed = urlparse(url)
-        path = parsed.path.rstrip("/")
-        parts = [part for part in path.split("/") if part]
-        if not parts:
-            raise DirectDownloadLinkException("ERROR: Direct link not found")
-
-        base = f"{parsed.scheme}://{parsed.netloc}"
-        if parts[0] == "d" and len(parts) >= 2:
-            return url
-
-        if parts[0] in {"f", "v"} and len(parts) >= 2:
-            code = parts[1]
-            candidate = f"{base}/d/{code}"
-            with create_scraper() as session:
-                try:
-                    html = HTML(session.get(url).text)
-                except Exception as e:
-                    raise DirectDownloadLinkException(
-                        f"ERROR: {e.__class__.__name__}"
-                    ) from e
-            if direct_link := html.xpath("//a[contains(@href, '/d/')]/@href"):
-                link = direct_link[0]
-                if link.startswith("/"):
-                    return f"{base}{link}"
-                if link.startswith("http"):
-                    return link
-            return candidate
-
-        with create_scraper() as session:
-            try:
-                html = HTML(session.get(url).text)
-            except Exception as e:
-                raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}") from e
-        if direct_link := html.xpath("//a[contains(@href, '/d/')]/@href"):
-            link = direct_link[0]
-            if link.startswith("/"):
-                return f"{base}{link}"
-            if link.startswith("http"):
-                return link
-        raise DirectDownloadLinkException("ERROR: Direct link not found")
-    except DirectDownloadLinkException:
-        raise
-    except Exception as e:
-        raise DirectDownloadLinkException("ERROR: Direct link not found") from e
-
 def streamtape(url):
     splitted_url = url.split("/")
     _id = splitted_url[4] if len(splitted_url) >= 6 else splitted_url[-1]
