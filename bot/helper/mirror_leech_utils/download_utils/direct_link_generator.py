@@ -4,7 +4,7 @@ from http.cookiejar import MozillaCookieJar
 from json import loads
 from lxml.etree import HTML
 from os import path as ospath
-from re import findall, finditer, match, search
+from re import DOTALL, findall, match, search
 from requests import Session, post, get, RequestException
 from requests.adapters import HTTPAdapter
 from time import sleep
@@ -785,15 +785,17 @@ def bunkr(url):
             raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}") from e
         title_match = search(r'property="og:title" content="([^"]+)"', page)
         title = unquote(title_match.group(1)) if title_match else "bunkr_album"
-        items_raw = _extract_between(page, "window.albumFiles = [", "</script>")
-        if not items_raw:
-            raise DirectDownloadLinkException("ERROR: Album items not found")
-        item_blocks = list(findall(r"\{[^}]*\}", items_raw, flags=0))
-        if not item_blocks:
-            item_blocks = list(
-                match.group(0)
-                for match in finditer(r"\{[^}]*\}", items_raw, flags=0)
-            )
+        items_match = search(
+            r"window\\.albumFiles\\s*=\\s*(\\[.*?\\])", page, flags=DOTALL
+        )
+        if not items_match:
+            items_raw = _extract_between(page, "window.albumFiles = [", "</script>")
+            if not items_raw:
+                raise DirectDownloadLinkException("ERROR: Album items not found")
+            items_raw = f"[{items_raw}"
+        else:
+            items_raw = items_match.group(1)
+        item_blocks = list(findall(r"\\{.*?\\}", items_raw, flags=DOTALL))
         if not item_blocks:
             item_blocks = items_raw.split("\n},\n")
         details = {
