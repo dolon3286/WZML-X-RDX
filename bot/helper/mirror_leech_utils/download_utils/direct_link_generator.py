@@ -4,7 +4,7 @@ from http.cookiejar import MozillaCookieJar
 from json import loads
 from lxml.etree import HTML
 from os import path as ospath
-from re import findall, match, search
+from re import findall, finditer, match, search
 from requests import Session, post, get, RequestException
 from requests.adapters import HTTPAdapter
 from time import sleep
@@ -788,14 +788,21 @@ def bunkr(url):
         items_raw = _extract_between(page, "window.albumFiles = [", "</script>")
         if not items_raw:
             raise DirectDownloadLinkException("ERROR: Album items not found")
-        items = items_raw.split("\n},\n")
+        item_blocks = list(findall(r"\{[^}]*\}", items_raw, flags=0))
+        if not item_blocks:
+            item_blocks = list(
+                match.group(0)
+                for match in finditer(r"\{[^}]*\}", items_raw, flags=0)
+            )
+        if not item_blocks:
+            item_blocks = items_raw.split("\n},\n")
         details = {
             "contents": [],
             "title": title,
             "total_size": 0,
             "header": f"Referer: {root_dl}/",
         }
-        for item in items:
+        for item in item_blocks:
             data_id_match = search(r"id:\\s*([0-9]+)", item)
             if not data_id_match:
                 continue
