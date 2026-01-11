@@ -720,118 +720,46 @@ def pixeldrain(url):
         raise DirectDownloadLinkException("ERROR: Direct link not found") from e
 
 def bunkr(url):
-    root_dl = "https://get.bunkrr.su"
-    endpoint = "https://apidl.bunkr.ru/api/_001_v2"
-
-    def _extract_between(text, start, end):
-        start_index = text.find(start)
-        if start_index == -1:
-            return ""
-        start_index += len(start)
-        end_index = text.find(end, start_index)
-        if end_index == -1:
-            return ""
-        return text[start_index:end_index]
-
     def _decrypt_xor(data, key):
         decoded = b64decode(data)
-        decrypted = bytes(
-            byte ^ key[index % len(key)] for index, byte in enumerate(decoded)
-        )
-        return decrypted.decode("utf-8")
+        return bytes(
+            decoded[index] ^ key[index % len(key)] for index in range(len(decoded))
+        ).decode("utf-8", "ignore")
 
-    def _extract_data_id(page):
-        if match_id := search(r'data-file-id="([^"]+)"', page):
-            return match_id.group(1)
-        return ""
-
-    def _json_unescape(value):
-        if not value:
-            return ""
-        try:
-            return loads(f'"{value}"')
-        except Exception:
-            return value.replace("\\'", "'")
-
-    def _fetch_file_info(session, data_id):
-        referer = f"{root_dl}/file/{data_id}"
-        headers = {"Referer": referer, "Origin": root_dl}
-        try:
-            response = session.post(endpoint, headers=headers, json={"id": data_id})
-            response.raise_for_status()
-            data = response.json()
-        except Exception as e:
-            raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}") from e
-
-        if data.get("encrypted"):
-            key = f"SECRET_KEY_{data['timestamp'] // 3600}".encode()
-            file_url = _decrypt_xor(data["url"], key)
-        else:
-            file_url = data["url"]
-        return file_url, referer
-
+    headers = {"User-Agent": user_agent}
     try:
-        session = create_scraper()
-        session.headers.update({"User-Agent": user_agent})
-        parsed = urlparse(url)
-    except Exception as e:
+        page = get(url, headers=headers).text
+    except RequestException as e:
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}") from e
 
-    if "/a/" in parsed.path:
-        page_url = url if "advanced=1" in url else f"{url}?advanced=1"
-        try:
-            page = session.get(page_url).text
-        except Exception as e:
-            raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}") from e
-        title_match = search(r'property="og:title" content="([^"]+)"', page)
-        title = unquote(title_match.group(1)) if title_match else "bunkr_album"
-        items_raw = _extract_between(page, "window.albumFiles = [", "</script>")
-        if not items_raw:
-            raise DirectDownloadLinkException("ERROR: Album items not found")
-        items = items_raw.split("\n},\n")
-        details = {
-            "contents": [],
-            "title": title,
-            "total_size": 0,
-            "header": f"Referer: {root_dl}/",
-        }
-        for item in items:
-            data_id_match = search(r"id:\\s*([0-9]+)", item)
-            if not data_id_match:
-                continue
-            data_id = data_id_match.group(1).strip()
-            file_url, _referer = _fetch_file_info(session, data_id)
-            name_match = search(r"original:\\s*'([^']*)'", item) or search(
-                r'original:\\s*"([^"]*)"', item
-            )
-            filename = _json_unescape(name_match.group(1)) if name_match else ""
-            if not filename:
-                filename = unquote(urlparse(file_url).path.rsplit("/", 1)[-1])
-            size_match = search(r"size:\\s*([0-9]+)", item)
-            if size_match:
-                details["total_size"] += int(size_match.group(1))
-            details["contents"].append(
-                {"path": "", "filename": filename, "url": file_url}
-            )
-        if not details["contents"]:
-            raise DirectDownloadLinkException("ERROR: Album files not found")
-        if len(details["contents"]) == 1:
-            return details["contents"][0]["url"], details["header"]
-        return details
+    match_data = search(r'data-file-id=["\']([^"\']+)["\']', page)
+    if not match_data:
+        raise DirectDownloadLinkException("ERROR: File id not found")
 
+    data_id = match_data.group(1)
+    referer = f"https://get.bunkrr.su/file/{data_id}"
+    api_headers = {
+        "User-Agent": user_agent,
+        "Referer": referer,
+        "Origin": "https://get.bunkrr.su",
+    }
     try:
-        page = session.get(url).text
-    except Exception as e:
+        data = post(
+            "https://apidl.bunkr.ru/api/_001_v2",
+            headers=api_headers,
+            json={"id": data_id},
+        ).json()
+    except RequestException as e:
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}") from e
 
-    data_id = _extract_data_id(page)
-    if not data_id:
-        if "/file/" in parsed.path:
-            data_id = parsed.path.rsplit("/", 1)[-1]
-        else:
-            raise DirectDownloadLinkException("ERROR: File id not found")
-    file_url, referer = _fetch_file_info(session, data_id)
-    return file_url, f"Referer: {referer}"
+    if not data or "url" not in data:
+        raise DirectDownloadLinkException("ERROR: Direct link not found")
+
+    if data.get("encrypted"):
+        key = f"SECRET_KEY_{data['timestamp'] // 3600}".encode()
+        return _decrypt_xor(data["url"], key)
+
+    return data["url"]
 
 def streamtape(url):
     splitted_url = url.split("/")
