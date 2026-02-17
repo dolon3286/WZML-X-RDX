@@ -1330,6 +1330,20 @@ def gofile(url):
     except Exception as e:
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
 
+    def __api_json(session, method, api_url, headers=None, retries=3):
+        for attempt in range(retries):
+            try:
+                response = session.request(method, api_url, headers=headers, timeout=30)
+                if response.status_code == 429 and attempt < retries - 1:
+                    sleep(2 * (attempt + 1))
+                    continue
+                response.raise_for_status()
+                return response.json()
+            except Exception:
+                if attempt >= retries - 1:
+                    raise
+                sleep(2 * (attempt + 1))
+
     def __get_token(session):
         global gofile_token_cache
         headers = {
@@ -1338,6 +1352,10 @@ def gofile(url):
             "Accept": "*/*",
             "Connection": "keep-alive",
         }
+        # Prefer configured account token, then cached runtime token.
+        if Config.GOFILE_API:
+            return Config.GOFILE_API
+
         # Try to use cached token first
         if gofile_token_cache:
             # Validate cached token by making a test request
@@ -1349,10 +1367,12 @@ def gofile(url):
                     "Connection": "keep-alive",
                     "Authorization": "Bearer" + " " + gofile_token_cache,
                 }
-                test_res = session.get(
+                test_res = __api_json(
+                    session,
+                    "GET",
                     "https://api.gofile.io/accounts/website",
                     headers=test_headers,
-                ).json()
+                )
                 if test_res.get("status") == "ok":
                     return gofile_token_cache
             except Exception:
@@ -1361,7 +1381,7 @@ def gofile(url):
         # Create new account if no valid cached token
         __url = "https://api.gofile.io/accounts"
         try:
-            __res = session.post(__url, headers=headers).json()
+            __res = __api_json(session, "POST", __url, headers=headers)
             if __res["status"] != "ok":
                 raise DirectDownloadLinkException("ERROR: Failed to get token.")
             gofile_token_cache = __res["data"]["token"]
@@ -1382,7 +1402,7 @@ def gofile(url):
         if _password:
             _url += f"&password={_password}"
         try:
-            _json = session.get(_url, headers=headers).json()
+            _json = __api_json(session, "GET", _url, headers=headers)
         except Exception as e:
             raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
         
@@ -1396,7 +1416,7 @@ def gofile(url):
                     new_token = __get_token(session)
                     # Update headers with new token
                     headers["Authorization"] = "Bearer" + " " + new_token
-                    _json = session.get(_url, headers=headers).json()
+                    _json = __api_json(session, "GET", _url, headers=headers)
                     # Update details header with new token for return value
                     nonlocal details
                     details["header"] = f"Cookie: accountToken={new_token}"
@@ -1405,17 +1425,17 @@ def gofile(url):
             else:
                 raise DirectDownloadLinkException("ERROR: GoFile token revoked.")
         
-        if _json["status"] in "error-passwordRequired":
+        if _json["status"] == "error-passwordRequired":
             raise DirectDownloadLinkException(
                 f"ERROR:\n{PASSWORD_ERROR_MESSAGE.format(url)}"
             )
-        if _json["status"] in "error-passwordWrong":
+        if _json["status"] == "error-passwordWrong":
             raise DirectDownloadLinkException("ERROR: This password is wrong !")
-        if _json["status"] in "error-notFound":
+        if _json["status"] == "error-notFound":
             raise DirectDownloadLinkException(
                 "ERROR: File not found on gofile's server"
             )
-        if _json["status"] in "error-notPublic":
+        if _json["status"] == "error-notPublic":
             raise DirectDownloadLinkException("ERROR: This folder is not public")
 
         data = _json["data"]
