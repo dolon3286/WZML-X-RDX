@@ -1330,6 +1330,13 @@ def gofile(url):
     except Exception as e:
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
 
+    def __gofile_download_header(account_token):
+        return (
+            f"Cookie: accountToken={account_token}\n"
+            f"User-Agent: {user_agent}\n"
+            "Referer: https://gofile.io/"
+        )
+
     def __api_json(session, method, api_url, headers=None, retries=3):
         for attempt in range(retries):
             try:
@@ -1419,7 +1426,7 @@ def gofile(url):
                     _json = __api_json(session, "GET", _url, headers=headers)
                     # Update details header with new token for return value
                     nonlocal details
-                    details["header"] = f"Cookie: accountToken={new_token}"
+                    details["header"] = __gofile_download_header(new_token)
                 except Exception:
                     raise DirectDownloadLinkException("ERROR: GoFile token revoked and failed to create new token.")
             else:
@@ -1474,7 +1481,7 @@ def gofile(url):
             token = __get_token(session)
         except Exception as e:
             raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
-        details["header"] = f"Cookie: accountToken={token}"
+        details["header"] = __gofile_download_header(token)
         try:
             __fetch_links(session, _id)
         except Exception as e:
