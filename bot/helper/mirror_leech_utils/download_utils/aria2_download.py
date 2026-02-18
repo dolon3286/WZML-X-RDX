@@ -24,6 +24,17 @@ async def add_aria2_download(listener, dpath, header, ratio, seed_time):
         a2c_opt["out"] = listener.name
     if header:
         a2c_opt["header"] = header
+
+    # GoFile frequently rate-limits non-browser clients with HTTP 429.
+    # Use a browser-like user-agent and conservative retry policy for these URLs.
+    if "gofile.io" in listener.link:
+        a2c_opt["user-agent"] = (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/132.0.0.0 Safari/537.36"
+        )
+        a2c_opt["max-tries"] = "10"
+        a2c_opt["retry-wait"] = "5"
     if ratio:
         a2c_opt["seed-ratio"] = ratio
     if seed_time:
