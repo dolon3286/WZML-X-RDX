@@ -1325,18 +1325,17 @@ def linkBox(url: str):
 
 def gofile(url, auth):
     try:
+        _id = url.split('/')[-1]
+        worker_base_url = "https://gofile.kpsbots.workers.dev/"
+        gofile_url = f"{worker_base_url}{_id}"
+        return gofile_url
+    except Exception as e:
+        raise e
+
+    '''    
+    try:
         _password = sha256(auth[1].encode("utf-8")).hexdigest() if auth else ""
-        parsed = urlparse(url)
-        path_parts = [part for part in parsed.path.split("/") if part]
-        if not path_parts:
-            raise DirectDownloadLinkException("ERROR: Invalid GoFile link")
-        if "d" in path_parts:
-            d_index = path_parts.index("d")
-            if d_index + 1 >= len(path_parts):
-                raise DirectDownloadLinkException("ERROR: Invalid GoFile link")
-            _id = path_parts[d_index + 1]
-        else:
-            _id = path_parts[-1]
+        _id = url.split("/")[-1]
     except Exception as e:
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
 
@@ -1371,17 +1370,17 @@ def gofile(url, auth):
             _json = session.get(_url, headers=headers).json()
         except Exception as e:
             raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
-        if _json["status"] == "error-passwordRequired":
+        if _json["status"] in "error-passwordRequired":
             raise DirectDownloadLinkException(
                 f"ERROR:\n{PASSWORD_ERROR_MESSAGE.format(url)}"
             )
-        if _json["status"] == "error-passwordWrong":
+        if _json["status"] in "error-passwordWrong":
             raise DirectDownloadLinkException("ERROR: This password is wrong !")
-        if _json["status"] == "error-notFound":
+        if _json["status"] in "error-notFound":
             raise DirectDownloadLinkException(
                 "ERROR: File not found on gofile's server"
             )
-        if _json["status"] == "error-notPublic":
+        if _json["status"] in "error-notPublic":
             raise DirectDownloadLinkException("ERROR: This folder is not public")
 
         data = _json["data"]
@@ -1429,6 +1428,7 @@ def gofile(url, auth):
     if len(details["contents"]) == 1:
         return (details["contents"][0]["url"], details["header"])
     return details
+    '''
 
 
 def mediafireFolder(url):
