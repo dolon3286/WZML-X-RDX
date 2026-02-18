@@ -144,6 +144,9 @@ debrid_link_supported_sites = [
 
 
 def direct_link_generator(link):
+    auth = None
+    if isinstance(link, tuple):
+        link, auth = link
     """direct links generator"""
     domain = urlparse(link).hostname
     if not domain:
