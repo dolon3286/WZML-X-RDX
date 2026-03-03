@@ -28,6 +28,7 @@ psutil
 pycountry
 pymongo
 kurigram @ git+https://github.com/KurimuzonAkuma/kurigram@dev
+pyrogram
 python-magic
 pytz
 qbittorrent-api
