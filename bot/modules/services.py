@@ -5,7 +5,7 @@ from re import match
 
 from aiofiles import open as aiopen
 from cloudscraper import create_scraper
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from kurigram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from .. import LOGGER, user_data
 from ..core.config_manager import Config

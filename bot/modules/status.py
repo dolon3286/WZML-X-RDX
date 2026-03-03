@@ -2,7 +2,7 @@ from psutil import cpu_percent, virtual_memory, disk_usage
 from time import time
 from asyncio import gather, iscoroutinefunction
 
-from pyrogram.errors import QueryIdInvalid
+from kurigram.errors import QueryIdInvalid
 
 from .. import (
     task_dict_lock,
@@ -70,7 +70,7 @@ async def get_download_status(download):
     eng = download.engine
     speed = (
         download.speed()
-        if eng.startswith(("Pyro", "yt-dlp", "RClone", "Google-API"))
+        if eng.startswith(("Kurigram", "yt-dlp", "RClone", "Google-API"))
         else 0
     )
     return (

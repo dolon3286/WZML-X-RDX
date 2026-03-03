@@ -1,9 +1,9 @@
 from speedtest import Speedtest, ConfigRetrievalError
 
-from pyrogram import Client
-from pyrogram.filters import command
-from pyrogram.handlers import MessageHandler
-from pyrogram.types import Message
+from kurigram import Client
+from kurigram.filters import command
+from kurigram.handlers import MessageHandler
+from kurigram.types import Message
 
 from bot.core.plugin_manager import PluginBase, PluginInfo
 from bot.helper.ext_utils.bot_utils import new_task, sync_to_async

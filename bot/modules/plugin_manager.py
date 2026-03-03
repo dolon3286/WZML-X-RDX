@@ -1,7 +1,7 @@
-from pyrogram import Client
-from pyrogram.filters import command, regex
-from pyrogram.handlers import CallbackQueryHandler, MessageHandler
-from pyrogram.types import Message
+from kurigram import Client
+from kurigram.filters import command, regex
+from kurigram.handlers import CallbackQueryHandler, MessageHandler
+from kurigram.types import Message
 
 from .. import LOGGER
 from ..core.plugin_manager import get_plugin_manager

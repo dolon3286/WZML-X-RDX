@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 from feedparser import parse as feed_parse
 from functools import partial
 from io import BytesIO
-from pyrogram.filters import create
-from pyrogram.handlers import MessageHandler
+from kurigram.filters import create
+from kurigram.handlers import MessageHandler
 from time import time
 from re import compile, I
 

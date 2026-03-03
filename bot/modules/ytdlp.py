@@ -5,8 +5,8 @@ from time import time
 from httpx import AsyncClient
 from aiofiles.os import path as aiopath
 from yt_dlp import YoutubeDL
-from pyrogram.filters import regex, user
-from pyrogram.handlers import CallbackQueryHandler
+from kurigram.filters import regex, user
+from kurigram.handlers import CallbackQueryHandler
 
 from .. import DOWNLOAD_DIR, LOGGER, bot_loop, task_dict_lock
 from ..core.config_manager import Config

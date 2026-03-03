@@ -1,8 +1,8 @@
 from time import time
 from uuid import uuid4
 
-from pyrogram.enums import ChatAction
-from pyrogram.errors import ChannelInvalid, PeerIdInvalid, RPCError, UserNotParticipant
+from kurigram.enums import ChatAction
+from kurigram.errors import ChannelInvalid, PeerIdInvalid, RPCError, UserNotParticipant
 
 from ..ext_utils.links_utils import encode_slink
 

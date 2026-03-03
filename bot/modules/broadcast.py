@@ -2,7 +2,7 @@ from asyncio import sleep
 from time import time
 from secrets import token_hex
 
-from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked
+from kurigram.errors import FloodWait, InputUserDeactivated, UserIsBlocked
 
 from ..core.config_manager import Config
 from ..core.tg_client import TgClient

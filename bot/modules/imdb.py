@@ -4,7 +4,7 @@ from re import IGNORECASE, findall, search
 import cloudscraper
 from imdbinfo import search_title, get_movie
 from pycountry import countries as conn
-from pyrogram.errors import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
+from kurigram.errors import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 
 from ..core.tg_client import TgClient
 from ..core.config_manager import Config

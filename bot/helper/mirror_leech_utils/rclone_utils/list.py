@@ -4,8 +4,8 @@ from asyncio import wait_for, Event, gather
 from configparser import RawConfigParser
 from functools import partial
 from json import loads
-from pyrogram.filters import regex, user
-from pyrogram.handlers import CallbackQueryHandler
+from kurigram.filters import regex, user
+from kurigram.handlers import CallbackQueryHandler
 from time import time
 
 from .... import LOGGER

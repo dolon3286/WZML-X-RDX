@@ -5,8 +5,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from pyrogram import Client
-from pyrogram.handlers import CallbackQueryHandler, MessageHandler
+from kurigram import Client
+from kurigram.handlers import CallbackQueryHandler, MessageHandler
 
 from .. import LOGGER
 from ..helper.telegram_helper.filters import CustomFilters
@@ -221,8 +221,8 @@ class PluginManager:
 
     def _register_handlers(self, plugin_instance: PluginBase, plugin_info: PluginInfo):
         from ..helper.telegram_helper.filters import CustomFilters
-        from pyrogram.filters import command
-        from pyrogram.handlers import MessageHandler
+        from kurigram.filters import command
+        from kurigram.handlers import MessageHandler
 
         for handler in plugin_info.handlers:
             self.bot.add_handler(handler)

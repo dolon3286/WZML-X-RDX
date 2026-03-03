@@ -1,12 +1,12 @@
 from asyncio import Lock, sleep
 from time import time
 from secrets import token_hex
-from pyrogram.errors import FloodWait, PeerIdInvalid, ChannelInvalid
+from kurigram.errors import FloodWait, PeerIdInvalid, ChannelInvalid
 
 from bot.helper.ext_utils.hyperdl_utils import HyperTGDownload
 
 try:
-    from pyrogram.errors import FloodPremiumWait
+    from kurigram.errors import FloodPremiumWait
 except ImportError:
     FloodPremiumWait = FloodWait
 

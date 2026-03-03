@@ -9,8 +9,8 @@ from time import time
 from aiofiles.os import makedirs, remove
 from aiofiles.os import path as aiopath
 from langcodes import Language
-from pyrogram.filters import create
-from pyrogram.handlers import MessageHandler
+from kurigram.filters import create
+from kurigram.handlers import MessageHandler
 
 from bot.helper.ext_utils.status_utils import get_readable_file_size
 

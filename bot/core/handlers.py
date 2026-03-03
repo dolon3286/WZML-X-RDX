@@ -1,8 +1,8 @@
 # ruff: noqa: F403, F405
 
-from pyrogram.filters import command, regex
-from pyrogram.handlers import CallbackQueryHandler, EditedMessageHandler, MessageHandler
-from pyrogram.types import BotCommand
+from kurigram.filters import command, regex
+from kurigram.handlers import CallbackQueryHandler, EditedMessageHandler, MessageHandler
+from kurigram.types import BotCommand
 
 from ..core.config_manager import Config
 from ..helper.ext_utils.help_messages import BOT_COMMANDS

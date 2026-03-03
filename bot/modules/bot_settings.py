@@ -13,8 +13,8 @@ from aiofiles import open as aiopen
 from aiofiles.os import path as aiopath
 from aiofiles.os import remove, rename
 from aioshutil import rmtree
-from pyrogram.filters import create
-from pyrogram.handlers import MessageHandler
+from kurigram.filters import create
+from kurigram.handlers import MessageHandler
 
 from .. import (
     LOGGER,

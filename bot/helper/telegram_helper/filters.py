@@ -1,5 +1,5 @@
-from pyrogram.filters import create
-from pyrogram.enums import ChatType
+from kurigram.filters import create
+from kurigram.enums import ChatType
 
 from ... import auth_chats, sudo_users, user_data
 from ...core.config_manager import Config

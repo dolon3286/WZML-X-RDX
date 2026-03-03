@@ -7,10 +7,10 @@ from time import time
 from aioshutil import rmtree
 from natsort import natsorted
 from PIL import Image
-from pyrogram.errors import BadRequest, FloodWait, RPCError
+from kurigram.errors import BadRequest, FloodWait, RPCError
 
 try:
-    from pyrogram.errors import FloodPremiumWait
+    from kurigram.errors import FloodPremiumWait
 except ImportError:
     FloodPremiumWait = FloodWait
 from aiofiles.os import (
@@ -18,7 +18,7 @@ from aiofiles.os import (
     remove,
     rename,
 )
-from pyrogram.types import (
+from kurigram.types import (
     InputMediaDocument,
     InputMediaPhoto,
     InputMediaVideo,

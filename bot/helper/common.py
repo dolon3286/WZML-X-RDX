@@ -8,7 +8,7 @@ from shlex import split
 
 from aiofiles.os import listdir, makedirs, remove, path as aiopath
 from aioshutil import move, rmtree
-from pyrogram.enums import ChatAction
+from kurigram.enums import ChatAction
 
 from .. import (
     DOWNLOAD_DIR,

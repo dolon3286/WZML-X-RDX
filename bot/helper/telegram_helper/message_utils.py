@@ -2,9 +2,9 @@ from asyncio import sleep, gather
 from re import match as re_match
 from time import time
 
-from pyrogram.types import Message
-from pyrogram.enums import ParseMode
-from pyrogram.errors import (
+from kurigram.types import Message
+from kurigram.enums import ParseMode
+from kurigram.errors import (
     FloodWait,
     MessageNotModified,
     MessageEmpty,
@@ -17,7 +17,7 @@ from pyrogram.errors import (
 )
 
 try:
-    from pyrogram.errors import FloodPremiumWait
+    from kurigram.errors import FloodPremiumWait
 except ImportError:
     FloodPremiumWait = FloodWait
 

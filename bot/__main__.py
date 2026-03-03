@@ -96,8 +96,8 @@ plugin_manager = get_plugin_manager()
 plugin_manager.bot = TgClient.bot
 register_plugin_commands()
 
-from pyrogram.filters import regex
-from pyrogram.handlers import CallbackQueryHandler
+from kurigram.filters import regex
+from kurigram.handlers import CallbackQueryHandler
 
 from .core.handlers import add_handlers
 from .helper.ext_utils.bot_utils import new_task

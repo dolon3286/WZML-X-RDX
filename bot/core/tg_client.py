@@ -1,4 +1,4 @@
-from pyrogram import Client, enums
+from kurigram import Client, enums
 from asyncio import Lock, gather
 from inspect import signature
 

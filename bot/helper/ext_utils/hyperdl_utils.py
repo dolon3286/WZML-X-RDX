@@ -19,11 +19,11 @@ from time import time
 from aiofiles import open as aiopen
 from aiofiles.os import makedirs, remove
 from aioshutil import move
-from pyrogram import StopTransmission, raw, utils
-from pyrogram.errors import AuthBytesInvalid, FloodWait
-from pyrogram.file_id import PHOTO_TYPES, FileId, FileType, ThumbnailSource
-from pyrogram.session import Auth, Session
-from pyrogram.session.internals import MsgId
+from kurigram import StopTransmission, raw, utils
+from kurigram.errors import AuthBytesInvalid, FloodWait
+from kurigram.file_id import PHOTO_TYPES, FileId, FileType, ThumbnailSource
+from kurigram.session import Auth, Session
+from kurigram.session.internals import MsgId
 
 from ... import LOGGER
 from ...core.config_manager import Config
