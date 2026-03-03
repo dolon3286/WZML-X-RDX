@@ -27,7 +27,7 @@ pillow
 psutil
 pycountry
 pymongo
-kurigram
+kurigram @ git+https://github.com/KurimuzonAkuma/kurigram@dev
 python-magic
 pytz
 qbittorrent-api
