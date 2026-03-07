@@ -526,8 +526,6 @@ class TelegramUploader:
                     thumb = None
 # Bypassing the broken wrapper to use the base client method
                 self._sent_msg = await self._sent_msg.reply_document(
-                    chat_id=self._sent_msg.chat.id,
-                    reply_to_message_id=self._sent_msg.id,
                     document=self._up_path,
                     thumb=thumb,
                     caption=cap_mono,
