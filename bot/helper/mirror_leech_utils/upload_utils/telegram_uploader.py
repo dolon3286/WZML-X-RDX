@@ -214,7 +214,7 @@ class TelegramUploader:
                 cap_mono,
             )
 
-        if len(file_) > 56:
+        if len(file_) > 255:
             if is_archive(file_):
                 name = get_base_name(file_)
                 ext = file_.split(name, 1)[1]
@@ -525,7 +525,7 @@ class TelegramUploader:
                 if thumb == "none":
                     thumb = None
 # Bypassing the broken wrapper to use the base client method
-                self._sent_msg = await self._sent_msg._client.send_document(
+                self._sent_msg = await self._sent_msg.reply_document(
                     chat_id=self._sent_msg.chat.id,
                     reply_to_message_id=self._sent_msg.id,
                     document=self._up_path,
