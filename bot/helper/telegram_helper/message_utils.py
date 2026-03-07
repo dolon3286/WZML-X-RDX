@@ -30,10 +30,11 @@ from ..ext_utils.status_utils import get_readable_message
 
 
 async def send_message(message, text, buttons=None, block=True, photo=None, **kwargs):
+    is_chat_id = isinstance(message, (int, str))
     try:
         if photo:
             try:
-                if isinstance(message, int):
+                if is_chat_id:
                     return await TgClient.bot.send_photo(
                         chat_id=message,
                         photo=photo,
@@ -71,7 +72,7 @@ async def send_message(message, text, buttons=None, block=True, photo=None, **kw
             except Exception:
                 LOGGER.error("Error while sending photo", exc_info=True)
                 return
-        if isinstance(message, int):
+        if is_chat_id:
             return await TgClient.bot.send_message(
                 chat_id=message,
                 text=text,
